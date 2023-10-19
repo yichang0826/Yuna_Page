@@ -1,7 +1,18 @@
+body {
+    font-family:     sans-serif;
+}
+/*
+cursive 
+'Franklin Gothic Medium',
+'Arial Narrow',
+Arial,
+*/
+
 .background {
     background-color: rgb(255, 233, 233);
-    padding: 5px;
-    min-height: calc(99vh - 20px);
+    margin: 1vh;
+    min-height: calc(98vh);
+    min-width: calc(99vh);
     /* 10px的白边 */
 }
 
@@ -18,32 +29,52 @@
     bottom: 0;
 }
 
-.top {
-    width: 200px;
-    /* 设置宽度为 200px */
-    height: 300px;
-    /* 设置高度为 300px */
-    background-color: white;
-    /* 白色背景颜色 */
-    border-radius: 10px;
-    /* 圆角 */
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
-    /* 阴影 */
-    position: absolute;
-    top: 50%;
-    /* 保持在垂直方向正中间 */
-    left: 50%;
-    /* 保持在水平方向正中间 */
-    transform: translate(-50%, -50%);
-    /* 居中 */
-}
-
 canvas {
     position: absolute;
     top: 50%;
-    /* 让线从卡片中间开始 */
+    /* 物理世界 中心點*/
     left: 50%;
-    /* 让线从卡片中间开始 */
+    /* 物理世界 中心點*/
     transform: translate(-50%, -50%);
-    /* 将卡片和线居中 */
+}
+
+.card {
+    min-width: 30%;
+    min-height: 50%;
+    z-index: 9999;
+    /* 设置卡片的层叠顺序 */
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.profile-pic {
+    max-height: 50%;
+    max-width: 50%;
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    border: 2px solid #000;
+    /* 添加黑色实线边框 */
+    border-radius: 10%;
+    /* 创建圆形边框 */
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+    /* 添加阴影效果 */
+}
+
+.card-body {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 10px;
+}
+
+.card-title,
+.card-text {
+    text-shadow: 2px 2px 4px pink;
+    /* 添加粉色阴影效果 */
 }

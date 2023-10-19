@@ -1,6 +1,8 @@
 // 氣球 -> 撞球
 // 櫻花 飄落
 
+console.log(`基本資訊：innerHeight:${innerHeight},innerWidth:${innerWidth}`);
+
 //#region balloon info
 // 获取对<div>元素的引用
 const balloonInfoDiv = document.getElementById('balloon-info');
@@ -20,7 +22,7 @@ function updateBalloonInfo(balloon) {
 
 //#region Matter World
 // Create a Matter.js engine with zero gravity
-const engine = Matter.Engine.create({ gravity: { x: 0, y: 1 } });
+const engine = Matter.Engine.create({ gravity: { x: 0, y: 0.1 } });
 
 // Create a canvas for the balloons
 const canvas = document.getElementById('balloon-canvas');
@@ -82,7 +84,7 @@ Matter.World.add(engine.world, [topWall, bottomWall, leftWall, rightWall]);
 // 创建气球数组
 const balloons = [];
 
-console.log("球體數量：",Math.round(window.innerWidth / 100));
+console.log("球體數量：", Math.round(window.innerWidth / 100));
 
 // 创建气球对象并将它们添加到数组中
 for (let i = 0; i < Math.round(window.innerWidth / 100); i++) {
@@ -167,7 +169,7 @@ for (let i = 0; i < 100; i++) {
     sakura.velocityY = 0.5 + Math.random() * 1.5; // 随机速度范围
 
     // 添加旋转角度属性（随机角度）
-    sakura.rotationSpeed = Math.random() * Math.random(); // 随机旋转角度范围
+    sakura.rotationSpeed = Math.random(); // 随机旋转角度范围
 
     sakuraContainer.addChild(sakura);
     sakuraArray.push(sakura);
