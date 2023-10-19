@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.17.1/matter.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/5.3.3/pixi.min.js"></script>
+</head>
+
+<body>
+    <div class="background">
+        <div id="particles-container">
+            <div class="buttom">
+                <canvas id="balloon-canvas"></canvas>
+                <div class="top">789</div>
+            </div>
+        </div>
+    </div>
+</body>
+<style>
+    .background {
+        background-color: rgb(255, 233, 233);
+        padding: 5px;
+        min-height: calc(99vh - 20px);
+        /* 10px的白边 */
+    }
+
+    .buttom {
+        background-color: rgba(215, 215, 215, 0.05);
+        /* 灰色半透明背景 */
+        margin: 20px;
+        /* 保留 20px 边距 */
+        padding: 5px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+    }
+
+    .top {
+        width: 200px;
+        /* 设置宽度为 200px */
+        height: 300px;
+        /* 设置高度为 300px */
+        background-color: white;
+        /* 白色背景颜色 */
+        border-radius: 10px;
+        /* 圆角 */
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+        /* 阴影 */
+        position: absolute;
+        top: 50%;
+        /* 保持在垂直方向正中间 */
+        left: 50%;
+        /* 保持在水平方向正中间 */
+        transform: translate(-50%, -50%);
+        /* 居中 */
+    }
+
+    canvas {
+        position: absolute;
+        top: 50%;
+        /* 让线从卡片中间开始 */
+        left: 50%;
+        /* 让线从卡片中间开始 */
+        transform: translate(-50%, -50%);
+        /* 将卡片和线居中 */
+    }
+</style>
+<script>
+    // Create a Matter.js engine
+    const engine = Matter.Engine.create();
+
+    // Create a canvas for the balloons
+    const canvas = document.getElementById('balloon-canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // 创建气球数组
+    const balloons = [];
+
+    // 创建气球对象并将它们添加到数组中
+    for (let i = 0; i < 10; i++) {
+        if (i == 0) {
+            // const isFloating = Math.random() < 0.5; // 随机确定气球是否飘浮
+            const radius = 1; // 随机半径
+            const x = window.innerWidth / 2;
+            const y = window.innerHeight / 2;
+
+            // 创建气球
+            const balloon = Matter.Bodies.circle(x, y, radius, {
+                frictionAir: 0.05, // 如果飘浮，减小摩擦
+                restitution: 0.5, // 如果飘浮，增加弹力
+                isStatic: true, // 如果不飘浮，将气球设置为静态
+            });
+
+            // 将气球添加到数组
+            balloons.push(balloon);
+
+            // 添加气球到物理世界
+            Matter.World.add(engine.world, [balloon]);
+        }
+        const isFloating = Math.random() < 0.5; // 随机确定气球是否飘浮
+        const radius = 30 + Math.random() * 20; // 随机半径
+        const x = Math.random() * window.innerWidth;
+        const y = Math.random() * window.innerHeight;
+
+        // 创建气球
+        const balloon = Matter.Bodies.circle(x, y, radius, {
+            frictionAir: 0.1, // 如果飘浮，减小摩擦
+            restitution: 0.05, // 如果飘浮，增加弹力
+            isStatic: !isFloating, // 如果不飘浮，将气球设置为静态
+        });
+        // 将气球添加到数组
+        balloons.push(balloon);
+
+        // 添加气球到物理世界
+        Matter.World.add(engine.world, [balloon]);
+    }
+
+    // 创建constraint数组来关联每个气球与卡片之间的约束
+    const constraints = [];
+    for (let i = 0; i < balloons.length; i++) {
+        const constraint = Matter.Constraint.create({
+            bodyA: balloons[i],
+            pointA: { x: 150, y: 150 },
+            bodyB: engine.world.bodies[0],
+            pointB: { x: 0, y: 0 },
+            length: 150,
+            stiffness: 0.05
+        });
+        constraints.push(constraint);
+    }
+
+    // Add balloons and constraints to the engine
+    Matter.World.add(engine.world, [...balloons, ...constraints]);
+
+    // Enable mouse dragging for the balloons
+    Matter.World.add(engine.world, Matter.MouseConstraint.create(engine));
+
+    // Main loop
+    Matter.Engine.run(engine);
+
+    // Render function
+    function render() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < balloons.length; i++) {
+            ctx.beginPath();
+            ctx.moveTo(balloons[i].position.x, balloons[i].position.y);
+            ctx.lineTo(engine.world.bodies[0].position.x, engine.world.bodies[0].position.y);
+            ctx.strokeStyle = '#ff9900';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Draw balloon
+            ctx.beginPath();
+            ctx.arc(balloons[i].position.x, balloons[i].position.y, balloons[i].circleRadius, 0, 2 * Math.PI);
+            ctx.fillStyle = '#ff9900';
+            ctx.fill();
+        }
+    }
+
+    // Run the render function
+    Matter.Events.on(engine, 'beforeUpdate', function () {
+        render();
+    });
+
+
+    //#region 櫻花效果
+
+    // 创建PixiJS应用
+    const app = new PIXI.Application({
+        width: window.innerWidth,
+        height: window.innerHeight,
+        transparent: true,
+    });
+
+    // 添加PixiJS渲染器到文档
+    document.body.appendChild(app.view);
+
+    // 创建樱花纹理
+    const sakuraTexture = PIXI.Texture.from('sakura.png');
+
+    // 创建樱花容器
+    const sakuraContainer = new PIXI.ParticleContainer();
+    app.stage.addChild(sakuraContainer);
+
+    // 添加樱花到容器中
+    const sakuraArray = [];
+
+    for (let i = 0; i < 100; i++) {
+        const sakura = new PIXI.Sprite(sakuraTexture);
+        sakura.x = Math.random() * window.innerWidth;
+        sakura.y = Math.random() * -100; // 初始位置在屏幕上方
+        sakura.scale.set(0.1 + Math.random() * 0.3); // 縮放比例
+        sakura.alpha = 0.5 + Math.random() * 0.5; // 透明度
+
+        // 添加速度属性（随机速度）
+        sakura.velocityY = 0.5 + Math.random() * 1.5; // 随机速度范围
+
+        // 添加旋转角度属性（随机角度）
+        sakura.rotationSpeed = Math.random() * Math.random(); // 随机旋转角度范围
+
+        sakuraContainer.addChild(sakura);
+        sakuraArray.push(sakura);
+    }
+
+    // 创建动画循环
+    app.ticker.add(() => {
+        sakuraArray.forEach(sakura => {
+            sakura.y += sakura.velocityY;
+            sakura.rotation += sakura.rotationSpeed; // 旋转角度
+            sakura.x += Math.sin(sakura.y * 0.02) * Math.random(); // 添加水平摆动效果
+            if (sakura.y > window.innerHeight) {
+                sakura.y = -100; // 重新放置到屏幕上方
+                sakura.x = Math.random() * window.innerWidth;
+            }
+        });
+    });
+    //#endregion
+
+</script>
+
+</html>

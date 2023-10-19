@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>調香師名片</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.17.1/matter.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffc0cb;
+            /* 底层淡粉色 */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            /* 让气球在底部 */
+            min-height: 100vh;
+        }
+
+        .card-container {
+            position: relative;
+            /* background-color: transparent; */
+            /* 卡片背景透明 */
+            display: inline-block;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .profile-image {
+            max-width: 150px;
+            border-radius: 50%;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-top: 10px;
+            color: #333;
+        }
+
+        h2 {
+            font-size: 18px;
+            color: #555;
+        }
+
+        p {
+            font-size: 16px;
+            color: #777;
+        }
+
+        canvas {
+            position: absolute;
+            top: 50%;
+            /* 让线从卡片中间开始 */
+            left: 50%;
+            /* 让线从卡片中间开始 */
+            transform: translate(-50%, -50%);
+            /* 将卡片和线居中 */
+        }
+
+        /* 添加装饰性元素 */
+        .decoration-top {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 30px;
+            height: 30px;
+            /* background-color: #ffc0cb; */
+            clip-path: polygon(100% 0, 0 100%, 0 0);
+        }
+
+        .decoration-bottom {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 30px;
+            height: 30px;
+            /* background-color: #ffc0cb; */
+            clip-path: polygon(100% 100%, 100% 0, 0 100%);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-container">
+        <canvas id="balloon-canvas"></canvas>
+        <div class="decoration-bottom">
+            <div class="card-container">
+                <img class="profile-image" src="perfumer.jpg" alt="Perfumer">
+                <h1>調香師</h1>
+                <h2>香氛藝術家</h2>
+                <p>我專注於創造最獨特的香氣體驗。</p>
+                <i class="scent-icon">🌸</i>
+                <i class="scent-icon">🍃</i>
+                <i class="scent-icon">🌺</i>
+                <p>聯絡我：<a class="contact-link" href="mailto:perfumer@example.com">perfumer@example.com</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Create a Matter.js engine
+        const engine = Matter.Engine.create();
+
+        // Create a canvas for the balloons
+        const canvas = document.getElementById('balloon-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // Create balloons
+        const balloon = Matter.Bodies.circle(200, 200, 50, {
+            frictionAir: 0.02,
+            restitution: 0.5
+        });
+
+        // Create constraint to connect balloon to card
+        const constraint = Matter.Constraint.create({
+            bodyA: balloon,
+            pointA: { x: 0, y: 0 },
+            bodyB: engine.world.bodies[0],
+            pointB: { x: 0, y: 0 },
+            length: 150,
+            stiffness: 0.1
+        });
+
+        // Add balloons and constraint to the engine
+        Matter.World.add(engine.world, [balloon, constraint]);
+
+        // Enable mouse dragging for the balloon
+        Matter.World.add(engine.world, Matter.MouseConstraint.create(engine));
+
+        // Main loop
+        Matter.Engine.run(engine);
+
+        // Render function
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.beginPath();
+            ctx.moveTo(balloon.position.x, balloon.position.y);
+            ctx.lineTo(engine.world.bodies[0].position.x, engine.world.bodies[0].position.y);
+            ctx.strokeStyle = '#ff9900';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Draw balloon
+            ctx.beginPath();
+            ctx.arc(balloon.position.x, balloon.position.y, 50, 0, 2 * Math.PI);
+            ctx.fillStyle = '#ff9900';
+            ctx.fill();
+        }
+
+        // Run the render function
+        Matter.Events.on(engine, 'beforeUpdate', function () {
+            render();
+        });
+    </script>
+</body>
+
+</html>
