@@ -11,8 +11,8 @@ function updateBalloonInfo(balloon) {
     y: ${balloon.position.y.toFixed(2)}, 
     vx: ${balloon.velocity.x.toFixed(2)}, 
     vy: ${balloon.velocity.y.toFixed(2)},
-    speed: ${balloon.speed }`;
-    
+    speed: ${balloon.speed}`;
+
     // 将信息显示在<div>中
     balloonInfoDiv.textContent = infoText;
 }
@@ -82,8 +82,10 @@ Matter.World.add(engine.world, [topWall, bottomWall, leftWall, rightWall]);
 // 创建气球数组
 const balloons = [];
 
+console.log("球體數量：",Math.round(window.innerWidth / 100));
+
 // 创建气球对象并将它们添加到数组中
-for (let i = 0; i < 20; i++) {
+for (let i = 0; i < Math.round(window.innerWidth / 100); i++) {
     const radius = 80 + Math.random() * 50; // 随机半径
     const x = Math.random() * window.innerWidth;
     const y = Math.random() * window.innerHeight; // 初始Y坐标设置为窗口的一半
@@ -91,7 +93,7 @@ for (let i = 0; i < 20; i++) {
     // 创建气球
     const balloon = Matter.Bodies.circle(x, y, radius, {
         frictionAir: 0.02, // 减小空气摩擦
-        restitution: 0.2 + Math.random(), // 随机弹力
+        restitution: 0.2 + Math.random() * 0.5, // 随机弹力
         density: 0.001 + Math.random() * 0.002, // 随机密度
     });
 
