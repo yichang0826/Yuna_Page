@@ -84,11 +84,11 @@ Matter.World.add(engine.world, [topWall, bottomWall, leftWall, rightWall]);
 // 创建气球数组
 const balloons = [];
 
-console.log("球體數量：", Math.round(window.innerWidth / 100));
+console.log("球體半徑：", Math.round(window.innerWidth / 20));
 
 // 创建气球对象并将它们添加到数组中
-for (let i = 0; i < Math.round(window.innerWidth / 100); i++) {
-    const radius = 80 + Math.random() * 50; // 随机半径
+for (let i = 0; i < 20; i++) {
+    const radius = window.innerWidth / 20 + Math.random() * 80; // 随机半径
     const x = Math.random() * window.innerWidth;
     const y = Math.random() * window.innerHeight; // 初始Y坐标设置为窗口的一半
 
